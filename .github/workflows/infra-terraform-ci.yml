@@ -1,0 +1,76 @@
+name: Infra Terraform CI/CD
+
+on:
+  pull_request:
+    paths:
+      - "infra/**"
+  workflow_dispatch: {}
+  push:
+    branches: [ main ]
+    paths:
+      - "infra/**"
+
+jobs:
+  terraform-ci:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: infra
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+    steps:
+      - name: 소스 체크아웃
+        uses: actions/checkout@v4
+
+      - name: AWS 자격 증명 설정
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Terraform 설치
+        uses: hashicorp/setup-terraform@v3
+
+      - name: terraform fmt 검사
+        run: terraform fmt -check
+
+      - name: terraform init
+        run: terraform init -input=false
+
+      - name: terraform validate
+        run: terraform validate
+
+      - name: terraform plan
+        run: terraform plan -input=false
+
+  terraform-apply:
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+    defaults:
+      run:
+        working-directory: infra
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+    steps:
+      - name: 소스 체크아웃
+        uses: actions/checkout@v4
+
+      - name: AWS 자격 증명 설정
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Terraform 설치
+        uses: hashicorp/setup-terraform@v3
+
+      - name: terraform init
+        run: terraform init -input=false
+
+      - name: terraform apply
+        run: terraform apply -input=false -auto-approve

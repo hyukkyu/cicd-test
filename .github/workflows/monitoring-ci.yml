@@ -1,0 +1,20 @@
+name: Monitoring CI
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - "monitoring/**"
+
+jobs:
+  monitoring-config-check:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: monitoring
+    steps:
+      - name: 소스 체크아웃
+        uses: actions/checkout@v4
+
+      - name: docker-compose 문법 검증
+        run: docker compose config

@@ -1,0 +1,39 @@
+name: Frontend Admin CI/CD
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - "frontend-admin/**"
+
+jobs:
+  deploy-frontend-admin:
+    runs-on: ubuntu-latest
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      ADMIN_DISTRIBUTION_ID: ${{ secrets.ADMIN_DISTRIBUTION_ID }} # CloudFront ID (옵션)
+      ADMIN_BUCKET: ${{ secrets.ADMIN_BUCKET }}                   # S3 버킷명 (옵션)
+    steps:
+      - name: 소스 체크아웃
+        uses: actions/checkout@v4
+
+      # 필요 시 Node 빌드가 있다면 추가
+      # - name: Node.js 설정
+      #   uses: actions/setup-node@v4
+      #   with:
+      #     node-version: 18
+
+      - name: AWS 자격 증명 설정
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: 관리자 프론트엔드 배포
+        run: ./scripts/deploy-frontend.sh frontend-admin
+        env:
+          REGION: ${{ env.AWS_REGION }}
+          ADMIN_DISTRIBUTION_ID: ${{ env.ADMIN_DISTRIBUTION_ID }}
+          ADMIN_BUCKET: ${{ env.ADMIN_BUCKET }}
+          PATHS: "/*"

@@ -1,0 +1,48 @@
+name: Lambda CI/CD
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - "lambda/**"
+
+jobs:
+  deploy-lambda:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: lambda
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      LAMBDA_FUNCTION_NAME: ${{ secrets.LAMBDA_FUNCTION_NAME }}
+      # S3 배포를 사용할 경우 주석 해제
+      # LAMBDA_CODE_BUCKET: ${{ secrets.LAMBDA_CODE_BUCKET }}
+      # LAMBDA_CODE_KEY: lambda/moderation.zip
+    steps:
+      - name: 소스 체크아웃
+        uses: actions/checkout@v4
+
+      - name: AWS 자격 증명 설정
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Lambda 패키지 생성
+        run: zip -r moderation.zip moderation
+
+      - name: Lambda 코드 업데이트 (직접 업로드)
+        run: |
+          aws lambda update-function-code \
+            --function-name "$LAMBDA_FUNCTION_NAME" \
+            --zip-file fileb://moderation.zip \
+            --region "$AWS_REGION"
+        # S3 업로드 방식 예시:
+        # run: |
+        #   aws s3 cp moderation.zip "s3://${LAMBDA_CODE_BUCKET}/${LAMBDA_CODE_KEY}"
+        #   aws lambda update-function-code \
+        #     --function-name "$LAMBDA_FUNCTION_NAME" \
+        #     --s3-bucket "$LAMBDA_CODE_BUCKET" \
+        #     --s3-key "$LAMBDA_CODE_KEY" \
+        #     --region "$AWS_REGION"
