@@ -42,6 +42,7 @@ async function checkSession() {
 
 if (loginForm) {
   loginForm.addEventListener('submit', async (event) => {
+    alert('안녕');
     event.preventDefault();
     const formData = new FormData(loginForm);
     const payload = {
