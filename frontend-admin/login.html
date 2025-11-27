@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>관리자 로그인</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.1/dist/tailwind.min.css" />
+  <link rel="stylesheet" href="css/admin.css" />
+</head>
+<body>
+  <header class="admin-header">
+    <div>
+      <p class="subtitle">cms-community admin</p>
+      <h1>관리자 로그인</h1>
+    </div>
+  </header>
+  <div class="login-shell">
+    <div class="login-card">
+      <p class="subtitle text-muted">cms-community admin</p>
+      <h1>관리자 로그인</h1>
+      <p class="text-sm text-slate-500">관리자 계정으로 인증 후 대시보드로 이동합니다.</p>
+      <form id="loginForm">
+        <input class="input" name="username" placeholder="아이디" autocomplete="username" required />
+        <input class="input" type="password" name="password" placeholder="비밀번호" autocomplete="current-password" required />
+        <button class="btn btn-primary w-100" type="submit">로그인</button>
+      </form>
+      <p id="loginFeedback" class="status" data-status=""></p>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="js/login.js"></script>
+</body>
+</html>

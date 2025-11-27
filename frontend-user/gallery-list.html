@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>갤러리 목록 - CMS Community</title>
+    <script src="static.config.js"></script>
+    <link rel="stylesheet" data-versioned="styles" href="styles.css" />
+    <script>
+      (function () {
+        const version = window.__ASSET_VERSION__ || 'v0';
+        const el = document.querySelector('link[data-versioned="styles"]');
+        if (el) {
+          el.href = `styles.css?v=${version}`;
+        }
+      })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700&display=swap" rel="stylesheet" />
+  </head>
+  <body class="gallery-list-page">
+    <header class="site-header">
+      <div class="site-header__brand">
+        <a class="site-brand__link" href="index.html">
+          <span class="site-header__logo">CMS</span>
+          <strong>community</strong>
+        </a>
+      </div>
+      <nav class="site-header__menu">
+        <button class="site-nav__link" type="button" data-target="home">홈</button>
+        <a class="site-nav__link" href="gallery.html">갤러리</a>
+        <button class="site-nav__link" type="button" data-target="board">자유게시판</button>
+        <button class="site-nav__link" type="button" data-target="notice">공지사항</button>
+      </nav>
+      <div class="site-header__actions">
+        <div class="user-badge hidden" id="userBadge" role="button" tabindex="0">
+          <div class="user-avatar" id="userAvatar">U</div>
+          <div class="user-meta">
+            <strong id="userName"></strong>
+            <small id="userRole"></small>
+          </div>
+          <button class="btn btn-text" id="headerLogoutButton" type="button">로그아웃</button>
+        </div>
+        <div class="auth-buttons" id="headerAuthButtons">
+          <button class="btn btn-outline" id="headerLoginButton" type="button">로그인</button>
+          <button class="btn btn-ghost" id="headerSignupButton" type="button">회원가입</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="gallery-list-main">
+      <section class="hero hero--compact">
+        <div class="hero__content">
+          <p class="hero__eyebrow">Gallery</p>
+          <h1 id="listHeroTitle">갤러리 목록</h1>
+          <p class="hero__subtitle" id="listHeroDescription">카테고리를 선택해 작품을 살펴보세요.</p>
+          <div class="hero__actions">
+            <button class="btn btn-secondary" id="listUploadButton" type="button">갤러리 작성</button>
+            <button class="btn btn-outline" id="listBackButton" type="button">대메뉴로 돌아가기</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel__head">
+          <div>
+            <p class="panel__eyebrow">검색</p>
+            <h2>작품 검색</h2>
+          </div>
+        </div>
+        <form id="gallerySearchForm" class="gallery-search-form">
+          <select id="searchType" class="input">
+            <option value="all">제목+내용</option>
+            <option value="title">제목</option>
+            <option value="content">내용</option>
+            <option value="author">작성자</option>
+          </select>
+          <input id="searchKeyword" class="input" placeholder="검색어를 입력하세요" />
+          <button class="btn btn-primary" type="submit">검색</button>
+        </form>
+        <div class="gallery-sort-tabs" id="listTabChips" role="tablist"></div>
+      </section>
+
+      <section class="panel">
+        <div class="panel__head">
+          <div>
+            <p class="panel__eyebrow" id="listPanelEyebrow">Gallery</p>
+            <h2 id="listPanelTitle">작품 목록</h2>
+          </div>
+        </div>
+        <div class="gallery-table">
+          <div class="gallery-table__header">
+            <span class="gallery-table__head gallery-table__head--info">작품 정보</span>
+            <span class="gallery-table__head gallery-table__head--author">작성자</span>
+            <span class="gallery-table__head gallery-table__head--stats">지표</span>
+            <span class="gallery-table__head gallery-table__head--date">등록일</span>
+          </div>
+          <div id="galleryList" class="gallery-table__body"></div>
+        </div>
+        <p class="status" id="galleryStatus"></p>
+        <div class="gallery-actions">
+          <button id="loadMoreGallery" class="btn btn-text" type="button">더 보기</button>
+        </div>
+      </section>
+    </main>
+
+    <script src="config.js?v=20251118a"></script>
+    <script src="gallery-config.js"></script>
+    <script>
+      (function () {
+        const version = window.__ASSET_VERSION__ || 'v0';
+        const script = document.createElement('script');
+        script.src = `gallery-list.js?v=${version}`;
+        document.body.appendChild(script);
+      })();
+    </script>
+  </body>
+</html>

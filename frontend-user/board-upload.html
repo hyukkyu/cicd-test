@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>게시글 등록 - 자유게시판</title>
+    <script src="static.config.js"></script>
+    <link rel="stylesheet" data-versioned="styles" href="styles.css" />
+    <script>
+      (function () {
+        const version = window.__ASSET_VERSION__ || 'v0';
+        const el = document.querySelector('link[data-versioned="styles"]');
+        if (el) {
+          el.href = `styles.css?v=${version}`;
+        }
+      })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700&display=swap" rel="stylesheet" />
+  </head>
+  <body class="gallery-upload-page">
+    <header class="site-header">
+      <div class="site-header__brand">
+        <a class="site-brand__link" href="index.html">
+          <span class="site-header__logo">CMS</span>
+          <strong>community</strong>
+        </a>
+      </div>
+      <nav class="site-header__menu">
+        <a class="site-nav__link" href="index.html">홈</a>
+        <a class="site-nav__link" href="gallery.html">갤러리</a>
+        <a class="site-nav__link active" href="board-list.html">자유게시판</a>
+        <button class="site-nav__link" type="button" data-target="notice">공지사항</button>
+      </nav>
+      <div class="site-header__actions">
+        <div class="user-badge hidden" id="userBadge" role="button" tabindex="0">
+          <div class="user-avatar" id="userAvatar">U</div>
+          <div class="user-meta">
+            <strong id="userName"></strong>
+            <small id="userRole"></small>
+          </div>
+          <button class="btn btn-text" id="headerLogoutButton" type="button">로그아웃</button>
+        </div>
+        <div class="auth-buttons" id="headerAuthButtons">
+          <button class="btn btn-outline" id="headerLoginButton" type="button">로그인</button>
+          <button class="btn btn-ghost" id="headerSignupButton" type="button">회원가입</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="gallery-upload">
+      <section class="panel">
+        <div class="panel__head">
+          <div>
+            <p class="panel__eyebrow category-eyebrow">
+              <span id="uploadMainBadge" class="category-badge">대메뉴 선택 필요</span>
+              <span class="category-eyebrow__divider" aria-hidden="true">/</span>
+              <span id="uploadSubBadge" class="category-badge category-badge--sub">세부 카테고리 선택 필요</span>
+            </p>
+            <h2>게시글 등록</h2>
+          </div>
+        </div>
+        <form id="boardUploadForm" class="gallery-upload-form">
+          <div class="form-grid">
+            <label class="form-field">
+              <span class="form-field__label">대메뉴</span>
+              <select id="uploadMainSelect" name="mainBoardName" class="input" required></select>
+            </label>
+            <label class="form-field">
+              <span class="form-field__label">세부 카테고리</span>
+              <select id="uploadSubSelect" name="subBoardName" class="input" required></select>
+            </label>
+            <label class="form-field">
+              <span class="form-field__label">제목</span>
+              <input name="title" class="input" required />
+            </label>
+            <label class="form-field">
+              <span class="form-field__label">본문</span>
+              <textarea name="content" rows="6" class="input" required></textarea>
+            </label>
+            <div class="attachment-field">
+              <span class="attachment-field__label">첨부 (이미지/영상)</span>
+              <div class="file-picker">
+                <input type="file" id="uploadFileInput" class="file-picker__input" accept="image/*,video/*" multiple />
+                <label for="uploadFileInput" class="file-picker__button">파일 선택</label>
+                <span class="file-picker__hint">JPG, PNG, GIF, MP4 등 최대 10개</span>
+              </div>
+              <small class="help-text">선택한 파일은 업로드 후 게시글에 추가됩니다.</small>
+            </div>
+            <ul class="upload-list" id="uploadFileList"></ul>
+          </div>
+          <div class="upload-form-actions">
+            <button class="btn btn-secondary" type="button" id="uploadCancelButton">취소</button>
+            <button class="btn btn-primary" type="submit">등록하기</button>
+          </div>
+          <p class="status" id="uploadStatus"></p>
+        </form>
+      </section>
+    </main>
+
+    <script src="config.js?v=20251118a"></script>
+    <script>
+      (function () {
+        const version = window.__ASSET_VERSION__ || 'v0';
+        const script = document.createElement('script');
+        script.src = `board-upload.js?v=${version}`;
+        document.body.appendChild(script);
+      })();
+    </script>
+  </body>
+</html>

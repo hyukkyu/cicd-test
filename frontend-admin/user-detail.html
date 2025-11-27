@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>사용자 상세</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.1/dist/tailwind.min.css" />
+  <link rel="stylesheet" href="css/admin.css" />
+</head>
+<body>
+  <header class="admin-header">
+    <div>
+      <p class="subtitle">사용자 상세</p>
+      <h1>사용자 #<span id="userId">-</span></h1>
+    </div>
+    <div class="header-actions">
+      <div class="notification-wrapper">
+        <button id="notificationButton" class="icon-btn" type="button" aria-label="알림">
+          <span class="bell-icon">🔔</span>
+          <span id="notificationCount" class="notif-badge hidden">0</span>
+        </button>
+        <div id="notificationPanel" class="notification-panel hidden">
+          <div class="panel-head">
+            <div>
+              <h3 class="h6 mb-0">실시간 알림</h3>
+              <small class="text-muted">유해 감지 및 신고 상황을 즉시 확인하세요.</small>
+            </div>
+            <button id="markAllNotifications" class="btn btn-outline btn-sm">모두 읽음</button>
+          </div>
+          <ul id="notificationList" class="notification-list"></ul>
+          <p id="notificationEmpty" class="text-muted text-center hidden">표시할 알림이 없습니다.</p>
+        </div>
+      </div>
+      <button id="profileButton" class="profile-chip" type="button">
+        <span class="profile-avatar" id="profileAvatar">A</span>
+        <span class="profile-name" id="profileName">관리자</span>
+      </button>
+      <button id="logoutButton" class="btn btn-outline">로그아웃</button>
+    </div>
+  </header>
+
+  <main class="detail-layout">
+    <section class="detail-card">
+      <div class="section-head mb-3">
+        <div>
+          <h2 class="h5 mb-1" id="userName">사용자 이름</h2>
+          <small class="text-muted" id="userEmail">-</small>
+        </div>
+        <div id="userBadges" class="d-flex gap-2"></div>
+      </div>
+
+      <div class="detail-grid" id="userMeta">
+        <div><span>닉네임</span><p id="userNickname">-</p></div>
+        <div><span>상태</span><p id="userStatus">-</p></div>
+        <div><span>경고 횟수</span><p id="userWarns">0</p></div>
+        <div><span>가입일</span><p id="userCreated">-</p></div>
+        <div><span>최근 제재</span><p id="userSanction">-</p></div>
+        <div><span>차단일</span><p id="userSuspended">-</p></div>
+      </div>
+
+      <div class="stat-grid mt-4">
+        <div class="stat-card">
+          <p class="text-muted mb-1">작성한 게시글</p>
+          <p class="h4 mb-0" id="userPostCount">0</p>
+        </div>
+        <div class="stat-card">
+          <p class="text-muted mb-1">작성한 댓글</p>
+          <p class="h4 mb-0" id="userCommentCount">0</p>
+        </div>
+        <div class="stat-card">
+          <p class="text-muted mb-1">신고 횟수</p>
+          <p class="h4 mb-0" id="userReportCount">0</p>
+        </div>
+      </div>
+
+      <div class="section-block">
+        <h3 class="h6 mb-2">관리자 조치</h3>
+        <div class="d-flex gap-2 flex-wrap" id="userActions">
+          <button class="btn btn-primary" type="button" id="warnUserBtn">경고 보내기</button>
+          <button class="btn btn-outline" type="button" id="blockUserBtn">차단</button>
+          <button class="btn btn-outline" type="button" id="unblockUserBtn">차단 해제</button>
+          <button class="btn btn-outline" type="button" id="deleteUserBtn">삭제</button>
+        </div>
+        <p id="userActionStatus" class="status"></p>
+      </div>
+
+      <div class="section-block">
+        <div class="section-head">
+          <div>
+            <h3 class="h5 mb-1">작성한 게시글</h3>
+            <small class="text-muted">해당 사용자가 작성한 최신 게시글 목록입니다.</small>
+          </div>
+        </div>
+        <div id="userPosts" class="table-responsive text-sm text-muted">게시글 정보를 불러오는 중입니다.</div>
+      </div>
+    </section>
+  </main>
+
+  <div id="userActionModal" class="action-modal-backdrop hidden">
+    <div class="action-modal">
+      <h3 id="userActionModalTitle">사유 입력</h3>
+      <p class="text-muted">처리 사유를 입력하세요. 입력 내용은 기록에 남습니다.</p>
+      <textarea id="userActionModalNote" class="input" rows="4" placeholder="사유를 입력하세요"></textarea>
+      <div class="d-flex justify-content-end gap-2 mt-3">
+        <button id="userActionModalCancel" class="btn btn-outline btn-sm" type="button">취소</button>
+        <button id="userActionModalConfirm" class="btn btn-primary btn-sm" type="button">확인</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="js/header.js"></script>
+  <script src="js/user-detail.js"></script>
+</body>
+</html>

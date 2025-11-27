@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<div th:fragment="header" class="header-container">
+    <div class="main-header">
+        <a th:href="@{/}" class="logo">Cloud <span>Community</span></a>
+        <div class="search-bar">
+            <form th:action="@{/search}" method="get" id="globalSearchForm">
+                <input type="text" name="kw" placeholder="전체검색">
+                <button type="submit">검색</button>
+            </form>
+        </div>
+        <div class="auth-links">
+            <a th:if="${currentUser == null}" th:href="@{/login}" class="naver-style-login-btn">Cloud Community 로그인</a>
+            <div th:if="${currentUser != null}" class="header-user-info">
+                <div class="profile-pic-placeholder">
+                    <img th:if="${currentUser != null and currentUser.profilePictureUrl != null and !currentUser.profilePictureUrl.isEmpty()}" th:src="@{${currentUser.profilePictureUrl}}" alt="Profile Picture" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                    <img th:unless="${currentUser != null and currentUser.profilePictureUrl != null and !currentUser.profilePictureUrl.isEmpty()}" th:src="@{/img/default_profile.png}" alt="Default Profile Picture" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                </div>
+                <div class="user-notification-dropdown"
+                     data-notification-dropdown
+                     th:attr="data-notification-base=@{/user/api/notifications}"
+                     data-notification-limit="10">
+                    <button class="notification-toggle"
+                            id="userNotificationToggle"
+                            type="button"
+                            data-notification-toggle
+                            aria-haspopup="true"
+                            aria-expanded="false">
+                        <svg class="notification-icon"
+                             xmlns="http://www.w3.org/2000/svg"
+                             width="22"
+                             height="22"
+                             viewBox="0 0 16 16"
+                             fill="currentColor"
+                             aria-hidden="true"
+                             focusable="false">
+                            <path d="M8 16a2 2 0 0 0 1.985-1.75H6.015A2 2 0 0 0 8 16zm.104-14.995A1.5 1.5 0 0 0 6.5 2v.086A5.001 5.001 0 0 0 3 7c0 1.098-.5 2.996-1.401 4.32-.315.48-.099 1.18.523 1.28C4.094 12.978 5.537 13 8 13s3.905-.022 5.878-.4c.622-.1.838-.8.523-1.28C13.5 9.996 13 8.098 13 7a5.001 5.001 0 0 0-3.5-4.914V2a1.5 1.5 0 0 0-3 0v-.086a1.502 1.502 0 0 0-1.396-1.505z"/>
+                        </svg>
+                        <span id="user-notification-count"
+                              class="notification-badge"
+                              data-notification-count
+                              hidden>0</span>
+                    </button>
+                    <div class="notification-panel"
+                         id="userNotificationPanel"
+                         data-notification-panel
+                         role="menu"
+                         aria-labelledby="userNotificationToggle">
+                        <div class="panel-header">
+                            <span class="panel-title">알림</span>
+                            <button type="button"
+                                    class="panel-action"
+                                    data-notification-mark-all
+                                    id="user-notification-mark-all">모두 읽음</button>
+                        </div>
+                        <div id="user-notification-list"
+                             class="notification-list"
+                             data-notification-list>
+                            <div id="user-notification-empty"
+                                 class="notification-empty"
+                                 data-notification-empty>
+                                새로운 알림이 없습니다.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <a th:href="@{|/my-info|}" class="user-info" th:text="${currentUser.nickname} + '님'"></a>
+                <a th:href="@{/logout}" class="logout-link">로그아웃</a>
+            </div>
+        </div>
+    </div>
+    <nav class="samsung-nav">
+        <ul class="samsung-nav-list">
+            <li class="samsung-nav-item"><a th:href="@{/}" class="samsung-nav-link">홈</a></li>
+            <li class="samsung-nav-item"><a th:href="@{/gallery}" class="samsung-nav-link">갤러리</a></li>
+            <li class="samsung-nav-item"><a th:href="@{/post/list}" class="samsung-nav-link">자유게시판</a></li>
+            <li class="samsung-nav-item"><a th:href="@{/notice/list}" class="samsung-nav-link">공지사항</a></li>
+        </ul>
+    </nav>
+
+<script th:inline="javascript">
+/*<![CDATA[*/
+    (function () {
+        const dropdowns = document.querySelectorAll('[data-notification-dropdown]');
+        if (dropdowns.length === 0) {
+            return;
+        }
+
+        const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content || 'X-CSRF-TOKEN';
+
+        function getHeaders() {
+            return csrfToken ? {[csrfHeader]: csrfToken} : {};
+        }
+
+        function formatTimestamp(value) {
+            if (!value) {
+                return '-';
+            }
+            const date = new Date(value);
+            if (Number.isNaN(date.getTime())) {
+                return value;
+            }
+            return date.toLocaleString('ko-KR', {hour12: false});
+        }
+
+        dropdowns.forEach(container => {
+            const toggleEl = container.querySelector('[data-notification-toggle]');
+            const panelEl = container.querySelector('[data-notification-panel]');
+            const listEl = container.querySelector('[data-notification-list]');
+            const emptyEl = container.querySelector('[data-notification-empty]');
+            const badgeEl = container.querySelector('[data-notification-count]');
+            const markAllButton = container.querySelector('[data-notification-mark-all]');
+            const baseEndpoint = container.dataset.notificationBase || '/user/api/notifications';
+            const limit = Number.parseInt(container.dataset.notificationLimit || '10', 10);
+
+            if (!toggleEl || !panelEl || !listEl || !badgeEl) {
+                return;
+            }
+
+            let notifications = [];
+            let panelOpen = false;
+
+            function updateBadge() {
+                const unreadCount = notifications.length;
+                badgeEl.hidden = unreadCount === 0;
+                badgeEl.textContent = unreadCount === 0 ? '0' : unreadCount;
+            }
+
+            function renderNotifications() {
+                listEl.innerHTML = '';
+
+                if (notifications.length === 0) {
+                    if (emptyEl) {
+                        emptyEl.hidden = false;
+                        listEl.appendChild(emptyEl);
+                    }
+                    updateBadge();
+                    return;
+                }
+
+                if (emptyEl) {
+                    emptyEl.hidden = true;
+                }
+
+                notifications.forEach(notification => {
+                    const item = document.createElement('div');
+                    item.className = 'notification-item';
+                    item.dataset.notificationId = notification.id;
+                    item.setAttribute('role', 'menuitem');
+                    item.tabIndex = 0;
+
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'notification-meta';
+
+                    const messageEl = document.createElement('div');
+                    messageEl.className = 'text';
+                    messageEl.textContent = notification.message;
+                    wrapper.appendChild(messageEl);
+
+                    const timeEl = document.createElement('div');
+                    timeEl.className = 'time';
+                    timeEl.textContent = formatTimestamp(notification.createdAt);
+                    wrapper.appendChild(timeEl);
+
+                    item.appendChild(wrapper);
+
+                    const badge = document.createElement('span');
+                    badge.className = 'notification-indicator';
+                    badge.textContent = '새 알림';
+                    item.appendChild(badge);
+
+                    item.addEventListener('click', event => {
+                        event.preventDefault();
+                        markAsReadAndNavigate(notification);
+                    });
+
+                    listEl.appendChild(item);
+                });
+
+                updateBadge();
+            }
+
+            function markAsReadAndNavigate(notification) {
+                const fallbackLink = notification && notification.link ? notification.link : '/my-info';
+                if (!notification) {
+                    closePanel();
+                    window.location.href = fallbackLink;
+                    return;
+                }
+                if (notification.blocked) {
+                    notifications = notifications.filter(n => n.id !== notification.id);
+                    updateBadge();
+                    renderNotifications();
+                    closePanel();
+                    showBlockedAlert(notification);
+                    return;
+                }
+                if (notification.read) {
+                    closePanel();
+                    window.location.href = fallbackLink;
+                    return;
+                }
+                fetch(`${baseEndpoint}/${notification.id}/read`, {
+                    method: 'POST',
+                    headers: getHeaders(),
+                    credentials: 'same-origin'
+                }).finally(() => {
+                    notifications = notifications.filter(n => n.id !== notification.id);
+                    updateBadge();
+                    renderNotifications();
+                    closePanel();
+                    window.location.href = fallbackLink;
+                });
+            }
+
+            function showBlockedAlert(notification) {
+                const reason = notification && notification.blockedReason
+                    ? notification.blockedReason
+                    : '차단된 게시글이어서 이동할 수 없습니다.';
+                alert(reason);
+            }
+
+            function loadNotifications(forceReload) {
+                if (!forceReload && notifications.length > 0) {
+                    renderNotifications();
+                    return;
+                }
+
+                const listEndpoint = `${baseEndpoint}?limit=${Number.isFinite(limit) && limit > 0 ? limit : 10}`;
+                fetch(listEndpoint, {credentials: 'same-origin'})
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Failed to load notifications');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        notifications = Array.isArray(data)
+                            ? data.filter(n => !n.read).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                            : [];
+                        renderNotifications();
+                    })
+                    .catch(() => {
+                        notifications = [];
+                        renderNotifications();
+                    });
+            }
+
+            function openPanel() {
+                if (panelOpen) {
+                    return;
+                }
+                panelOpen = true;
+                container.classList.add('open');
+                panelEl.setAttribute('aria-hidden', 'false');
+                toggleEl.setAttribute('aria-expanded', 'true');
+                document.addEventListener('click', handleOutsideClick);
+                document.addEventListener('keydown', handleEscape);
+                loadNotifications(true);
+            }
+
+            function closePanel() {
+                if (!panelOpen) {
+                    return;
+                }
+                panelOpen = false;
+                container.classList.remove('open');
+                panelEl.setAttribute('aria-hidden', 'true');
+                toggleEl.setAttribute('aria-expanded', 'false');
+                document.removeEventListener('click', handleOutsideClick);
+                document.removeEventListener('keydown', handleEscape);
+            }
+
+            function handleOutsideClick(event) {
+                if (!container.contains(event.target)) {
+                    closePanel();
+                }
+            }
+
+            function handleEscape(event) {
+                if (event.key === 'Escape') {
+                    closePanel();
+                }
+            }
+
+            panelEl.addEventListener('click', event => event.stopPropagation());
+
+            toggleEl.addEventListener('click', event => {
+                event.preventDefault();
+                event.stopPropagation();
+                if (panelOpen) {
+                    closePanel();
+                } else {
+                    openPanel();
+                }
+            });
+
+            if (markAllButton) {
+                markAllButton.addEventListener('click', event => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    if (notifications.length === 0) {
+                        return;
+                    }
+                    fetch(`${baseEndpoint}/read-all`, {
+                        method: 'POST',
+                        headers: getHeaders(),
+                        credentials: 'same-origin'
+                    }).finally(() => {
+                        notifications = [];
+                        renderNotifications();
+                    });
+                });
+            }
+
+            const bootstrapLoad = () => loadNotifications(true);
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', bootstrapLoad, {once: true});
+            } else {
+                bootstrapLoad();
+            }
+        });
+    })();
+/*]]>*/
+</script>
+</div>
+</html>

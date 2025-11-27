@@ -1,0 +1,201 @@
+{
+  "id": null,
+  "uid": "cms-spring",
+  "title": "Spring Boot Observability",
+  "tags": ["spring", "cms-community"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 2,
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "CPU 사용률 (%)",
+      "gridPos": {"x": 0, "y": 0, "w": 12, "h": 8},
+      "datasource": {"type": "prometheus", "uid": "PBFA97CFB590B2093"},
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "color": {"mode": "palette-classic"}
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "avg(system_cpu_usage) * 100",
+          "legendFormat": "CPU"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "JVM 메모리 사용량 (MB)",
+      "gridPos": {"x": 12, "y": 0, "w": 12, "h": 8},
+      "datasource": {"type": "prometheus", "uid": "PBFA97CFB590B2093"},
+      "fieldConfig": {
+        "defaults": {
+          "unit": "megabytes",
+          "color": {"mode": "palette-classic"}
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(jvm_memory_used_bytes{area=\"heap\"}) / 1024 / 1024",
+          "legendFormat": "Heap"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "요청 수 (req/s)",
+      "gridPos": {"x": 0, "y": 8, "w": 12, "h": 8},
+      "datasource": {"type": "prometheus", "uid": "PBFA97CFB590B2093"},
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "color": {"mode": "palette-classic"}
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(http_server_requests_seconds_count[5m]))",
+          "legendFormat": "요청"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "에러율 (%)",
+      "gridPos": {"x": 12, "y": 8, "w": 12, "h": 8},
+      "datasource": {"type": "prometheus", "uid": "PBFA97CFB590B2093"},
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "color": {"mode": "continuous-RdYlGr"}
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "100 * ( (sum(rate(http_server_requests_seconds_count{status=~\"5..\"}[5m])) OR on() vector(0)) / (sum(rate(http_server_requests_seconds_count[5m])) OR on() vector(1e-9)) )",
+          "legendFormat": "에러율"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "type": "stat",
+      "title": "EC2 인스턴스 상태",
+      "gridPos": {"x": 8, "y": 16, "w": 8, "h": 6},
+      "datasource": {"type": "prometheus", "uid": "PBFA97CFB590B2093"},
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "color": {"mode": "thresholds"},
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {"color": "red", "value": null},
+              {"color": "green", "value": 0.5}
+            ]
+          },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {"text": "DOWN"},
+                "1": {"text": "UP"}
+              }
+            }
+          ]
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {"calcs": ["last"], "fields": "", "values": false},
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "community_ec2_status"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "type": "stat",
+      "title": "RDS 연결 상태",
+      "gridPos": {"x": 16, "y": 16, "w": 8, "h": 6},
+      "datasource": {"type": "prometheus", "uid": "PBFA97CFB590B2093"},
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "color": {"mode": "thresholds"},
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {"color": "red", "value": null},
+              {"color": "green", "value": 0.5}
+            ]
+          },
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {"text": "DOWN"},
+                "1": {"text": "UP"}
+              }
+            }
+          ]
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {"calcs": ["last"], "fields": "", "values": false},
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "community_rds_status"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "type": "timeseries",
+      "title": "유해 게시물 추이 (건)",
+      "gridPos": {"x": 0, "y": 22, "w": 24, "h": 8},
+      "datasource": {"type": "prometheus", "uid": "PBFA97CFB590B2093"},
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "color": {"mode": "palette-classic"}
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "community_harmful_posts_today_posts or vector(0)",
+          "legendFormat": "오늘 감지됨"
+        }
+      ]
+    }
+  ],
+  "templating": {"list": []}
+}

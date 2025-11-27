@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cms-community 사용자 허브</title>
+    <script src="static.config.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
+    <link rel="stylesheet" data-versioned="styles" href="styles.css" />
+    <script>
+      (function () {
+        const version = window.__ASSET_VERSION__ || 'v0';
+        const el = document.querySelector('link[data-versioned="styles"]');
+        if (el) {
+          el.href = `styles.css?v=${version}`;
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header__brand">
+        <a class="site-brand__link" href="index.html">
+          <span class="site-header__logo">CMS</span>
+          <strong>community</strong>
+        </a>
+      </div>
+      <nav class="site-header__menu">
+        <button class="site-nav__link active" type="button" data-target="home">홈</button>
+        <a class="site-nav__link" href="gallery.html">갤러리</a>
+        <button class="site-nav__link" type="button" data-target="board">자유게시판</button>
+        <button class="site-nav__link" type="button" data-target="notice">공지사항</button>
+      </nav>
+      <div class="site-header__actions">
+        <div class="user-badge hidden" id="userBadge" role="button" tabindex="0">
+          <div class="user-avatar" id="userAvatar">U</div>
+          <div class="user-meta">
+            <strong id="userName"></strong>
+            <small id="userRole"></small>
+          </div>
+          <button class="btn btn-text" id="headerLogoutButton" type="button">로그아웃</button>
+        </div>
+        <div class="auth-buttons" id="headerAuthButtons">
+          <button class="btn btn-outline" id="headerLoginButton" type="button">로그인</button>
+          <button class="btn btn-ghost" id="headerSignupButton" type="button">회원가입</button>
+        </div>
+      </div>
+    </header>
+
+    <header class="hero">
+      <div class="hero__content">
+        <p class="hero__eyebrow">CMS COMMUNITY</p>
+        <h1>지금 가장 뜨거운 커뮤니티</h1>
+        <p class="hero__subtitle">
+          트렌디한 게시판과 감각적인 갤러리, 그리고 간편한 계정 환경까지. 커뮤니티 활동을 위한 모든 것을 한 화면에서 경험해 보세요.
+        </p>
+        <p class="hero__welcome" id="welcomeMessage"></p>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="home-section" data-section="home">
+        <section class="panel posts">
+          <article class="posts__column" aria-live="polite">
+            <div class="panel__head">
+              <div>
+                <p class="panel__eyebrow">LATEST</p>
+                <h2>커뮤니티 최신글</h2>
+              </div>
+            </div>
+            <ul id="latestPostList" class="post-list" data-detail="gallery"></ul>
+            <p class="empty" id="latestEmpty">불러오는 중입니다...</p>
+          </article>
+
+          <article class="posts__column" aria-live="polite">
+            <div class="panel__head">
+              <div>
+                <p class="panel__eyebrow">TRENDING</p>
+                <h2>갤러리 인기글</h2>
+              </div>
+            </div>
+            <ul id="popularPostList" class="post-list"></ul>
+            <p class="empty" id="popularEmpty">불러오는 중입니다...</p>
+          </article>
+        </section>
+      </section>
+
+      <section class="panel span-2 hidden board-panel" data-section="board">
+        <div class="panel__head">
+          <div>
+            <p class="panel__eyebrow">COMMUNITY BOARD</p>
+            <h2>게시판 탐색</h2>
+          </div>
+          <div class="board-controls">
+            <select id="mainBoardSelect" class="input"></select>
+            <select id="subBoardSelect" class="input"></select>
+            <select id="tabSelect" class="input">
+              <option value="">전체 탭</option>
+              <option value="핫">핫</option>
+              <option value="후기">후기</option>
+              <option value="정보">정보</option>
+            </select>
+            <select id="searchType" class="input">
+              <option value="all">제목+내용</option>
+              <option value="title">제목</option>
+              <option value="content">내용</option>
+              <option value="author">작성자</option>
+            </select>
+            <input id="searchKeyword" class="input" placeholder="검색어" />
+            <button id="searchButton" class="btn btn-primary" type="button">조회</button>
+          </div>
+        </div>
+
+        <div class="board-layout">
+          <div class="board-list">
+            <ul id="communityPostList" class="post-list board-posts"></ul>
+            <p class="empty" id="boardEmpty">게시글이 없습니다.</p>
+          </div>
+          <div class="board-detail">
+            <div class="board-detail__header">
+              <div>
+                <h3 id="detailTitle">게시글을 선택하세요</h3>
+                <p id="postMeta"></p>
+              </div>
+              <div class="board-detail__actions">
+                <button id="reportPostButton" class="btn btn-text" type="button" disabled>신고</button>
+                <button id="voteButton" class="btn btn-secondary" type="button" disabled>추천</button>
+                <button id="editPostButton" class="btn btn-text" type="button" disabled>편집</button>
+                <button id="deletePostButton" class="btn btn-text" type="button" disabled>삭제</button>
+              </div>
+            </div>
+            <article id="postContent" class="post-content">
+              <p class="empty">게시글을 선택하면 상세 내용이 나타납니다.</p>
+            </article>
+            <div id="attachmentList" class="attachments"></div>
+            <div class="comments">
+              <div class="panel-subhead">
+                <h3>댓글</h3>
+                <small id="commentCount"></small>
+                <button id="loadMoreComments" class="btn btn-text" type="button">더 보기</button>
+              </div>
+              <ul id="commentList" class="comment-list"></ul>
+              <form id="commentForm" class="form-grid">
+                <input type="hidden" name="parentId" id="commentParentId" />
+                <div class="comment-reply-target hidden" id="commentReplyTarget">
+                  <span id="commentReplyLabel"></span>
+                  <button class="btn btn-text" type="button" id="cancelReplyButton">취소</button>
+                </div>
+                <textarea name="content" rows="3" class="input" placeholder="댓글을 입력하세요"></textarea>
+                <button class="btn btn-primary" type="submit">댓글 등록</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-subhead">
+          <div>
+            <p class="panel__eyebrow">WRITE</p>
+            <h3>게시글 작성/수정</h3>
+          </div>
+          <button id="resetPostForm" class="btn btn-text" type="button">새 글</button>
+        </div>
+        <form id="postForm" class="form-grid">
+          <input type="hidden" name="postId" />
+          <label>
+            제목
+            <input name="title" class="input" placeholder="게시글 제목" required />
+          </label>
+          <label>
+            메인 카테고리
+            <select name="mainBoardName" id="formMainBoard" class="input" required></select>
+          </label>
+          <label>
+            세부 카테고리
+            <select name="subBoardName" id="formSubBoard" class="input" required></select>
+          </label>
+          <label>
+            탭 (선택)
+            <input name="tabItem" class="input" placeholder="탭 이름" />
+          </label>
+          <label>
+            첨부 파일 URL (줄바꿈으로 구분)
+            <textarea name="fileUrls" rows="3" class="input" placeholder="https://example.com/image.png"></textarea>
+          </label>
+          <label>
+            내용
+            <textarea name="content" rows="6" class="input" placeholder="본문 내용을 입력하세요" required></textarea>
+          </label>
+          <button class="btn btn-primary" type="submit">게시글 저장</button>
+        </form>
+      </section>
+
+      <section class="panel hidden gallery-panel" data-section="gallery">
+        <div class="panel__head">
+          <div>
+            <p class="panel__eyebrow">GALLERY</p>
+            <h2>이미지/영상 갤러리</h2>
+          </div>
+          <button id="refreshGallery" class="btn btn-outline" type="button">새로고침</button>
+        </div>
+        <div id="galleryList" class="gallery-grid"></div>
+        <p class="status" id="galleryFeedback"></p>
+        <div class="panel-subhead">
+          <div>
+            <p class="panel__eyebrow">UPLOAD</p>
+            <h3>갤러리 게시</h3>
+          </div>
+        </div>
+        <form id="galleryForm" class="form-grid">
+          <label>
+            제목
+            <input name="title" class="input" placeholder="작품 제목" required />
+          </label>
+          <label>
+            설명
+            <textarea name="content" rows="4" class="input" placeholder="작품 설명" required></textarea>
+          </label>
+          <label>
+            파일 업로드 (이미지/영상)
+            <input type="file" id="galleryUploadInput" class="input" accept="image/*,video/*" multiple />
+            <small class="help-text">업로드 후 자동으로 URL이 추가됩니다.</small>
+          </label>
+          <ul class="upload-list" id="galleryUploadList"></ul>
+          <label>
+            추가 미디어 URL (쉼표/줄바꿈)
+            <textarea name="mediaUrl" rows="3" class="input" placeholder="https://example.com/image.png"></textarea>
+          </label>
+          <label>
+            메인 카테고리
+            <select name="mainBoardName" id="galleryMainBoard" class="input" required></select>
+          </label>
+          <label>
+            세부 카테고리
+            <select name="subBoardName" id="gallerySubBoard" class="input" required></select>
+          </label>
+          <label>
+            탭 (선택)
+            <input name="tabItem" class="input" placeholder="탭 이름" />
+          </label>
+          <button class="btn btn-primary" type="submit">갤러리 게시</button>
+        </form>
+      </section>
+
+      <div class="modal hidden" id="galleryModal">
+        <div class="modal__dialog">
+          <button class="modal__close" type="button" id="closeGalleryModal" aria-label="Close gallery detail">&times;</button>
+          <div class="modal__media" id="galleryModalMedia"></div>
+          <div class="modal__body" id="galleryModalBody">
+            <div class="modal__header">
+              <span class="board-chip" id="galleryModalBoard"></span>
+              <h3 id="galleryModalTitle"></h3>
+              <p class="modal__meta" id="galleryModalMeta"></p>
+            </div>
+            <p class="modal__description" id="galleryModalDescription"></p>
+            <div class="modal__attachments" id="galleryModalAttachments"></div>
+            <div class="modal__stats">
+              <span id="galleryModalStats"></span>
+              <button class="btn btn-text" id="galleryModalReport" type="button">신고</button>
+            </div>
+            <div class="modal__comments">
+              <h4>댓글</h4>
+              <ul id="galleryModalComments" class="comment-list"></ul>
+              <button class="btn btn-text" type="button" id="galleryLoadMoreComments">더 보기</button>
+              <form id="galleryCommentForm" class="form-grid">
+                <input type="hidden" name="parentId" id="galleryCommentParentId" />
+                <div class="comment-reply-target hidden" id="galleryCommentReplyTarget">
+                  <span id="galleryCommentReplyLabel"></span>
+                  <button class="btn btn-text" type="button" id="galleryCancelReplyButton">취소</button>
+                </div>
+                <textarea name="content" rows="3" class="input" placeholder="댓글을 입력하세요"></textarea>
+                <button class="btn btn-primary" type="submit">댓글 등록</button>
+              </form>
+            </div>
+            <p class="status" id="galleryModalStatus"></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal hidden" id="reportModal">
+        <div class="modal__dialog">
+          <button class="modal__close" type="button" id="closeReportModal" aria-label="Close report modal">&times;</button>
+          <div class="modal__body">
+            <div class="modal__header">
+              <h3>신고하기</h3>
+              <p class="modal__meta" id="reportModalTarget">대상을 선택하세요.</p>
+            </div>
+            <form id="reportForm" class="form-grid">
+              <label>
+                신고 사유
+                <textarea id="reportReason" name="reason" rows="4" class="input" placeholder="신고 사유를 입력하세요" required></textarea>
+              </label>
+              <div class="form-actions">
+                <button class="btn btn-primary" type="submit">신고 접수</button>
+                <button class="btn btn-text" type="button" id="cancelReportButton">닫기</button>
+              </div>
+            </form>
+            <p class="status" id="reportModalStatus"></p>
+          </div>
+        </div>
+      </div>
+
+      <section class="panel hidden notice-panel" data-section="notice">
+        <div class="panel__head notice-panel__head">
+          <div>
+            <p class="panel__eyebrow">NOTICE</p>
+            <h2>공지사항</h2>
+          </div>
+          <form id="noticeSearchForm" class="gallery-search-form notice-search-form">
+            <input id="noticeSearchInput" class="input" type="search" placeholder="제목/내용/첨부 검색" />
+            <button class="btn btn-outline" type="submit">검색</button>
+            <button id="refreshNotices" class="btn btn-ghost" type="button">새로고침</button>
+          </form>
+        </div>
+        <div class="notice-table">
+          <div class="notice-table__header">
+            <span>제목</span>
+            <span>작성자</span>
+            <span>작성일</span>
+          </div>
+          <div id="noticeTableBody" class="notice-table__body"></div>
+        </div>
+        <p class="status" id="noticeStatus">공지사항을 불러오는 중입니다...</p>
+      </section>
+
+      <section class="panel hidden account-panel" data-section="account">
+        <div class="panel__head">
+          <div>
+            <p class="panel__eyebrow">ACCOUNT</p>
+            <h2>내 계정 센터</h2>
+          </div>
+          <p class="status" id="accountAccessMessage">로그인 후 이용할 수 있습니다.</p>
+        </div>
+        <div class="account-grid">
+          <article class="account-card profile-card">
+            <div class="profile-hero">
+              <div class="profile-avatar-lg" id="profileAvatarLarge">U</div>
+              <div>
+                <h3 id="profileNickname">로그인이 필요합니다</h3>
+                <p id="profileUsername">@guest</p>
+              </div>
+            </div>
+            <dl class="profile-stats">
+              <div>
+                <dt>이메일</dt>
+                <dd id="profileEmail">-</dd>
+              </div>
+              <div>
+                <dt>역할</dt>
+                <dd id="profileRole">-</dd>
+              </div>
+              <div>
+                <dt>상태</dt>
+                <dd id="profileStatusLabel">-</dd>
+              </div>
+              <div>
+                <dt>경고</dt>
+                <dd id="profileWarnCount">-</dd>
+              </div>
+              <div>
+                <dt>가입일</dt>
+                <dd id="profileCreatedAt">-</dd>
+              </div>
+            </dl>
+          </article>
+
+          <article class="account-card" data-requires-auth>
+            <h3>프로필 수정</h3>
+            <p class="card-subtitle">닉네임과 프로필 이미지를 업데이트하세요.</p>
+            <form id="profileForm" class="form-grid" enctype="multipart/form-data">
+              <label>
+                닉네임
+                <input class="input" name="nickname" type="text" placeholder="닉네임" required />
+              </label>
+              <label class="file-input">
+                프로필 이미지
+                <input type="file" name="profilePicture" accept="image/*" />
+              </label>
+              <button class="btn btn-primary" type="submit">프로필 저장</button>
+            </form>
+            <p class="status" id="profileFeedback"></p>
+          </article>
+
+          <article class="account-card" data-requires-auth>
+            <h3>비밀번호 변경</h3>
+            <p class="card-subtitle">관리자는 여기서 변경하고, 일반 계정은 Cognito 재설정을 이용해 주세요.</p>
+            <form id="passwordForm" class="form-grid">
+              <label>
+                현재 비밀번호
+                <input class="input" type="password" name="currentPassword" autocomplete="current-password" required />
+              </label>
+              <label>
+                새 비밀번호
+                <input class="input" type="password" name="newPassword" autocomplete="new-password" required />
+              </label>
+              <label>
+                새 비밀번호 확인
+                <input class="input" type="password" name="confirmNewPassword" autocomplete="new-password" required />
+              </label>
+              <button class="btn btn-secondary" type="submit">비밀번호 변경</button>
+            </form>
+            <p class="status" id="passwordFeedback"></p>
+          </article>
+
+          <article class="account-card account-card--danger" data-requires-auth>
+            <h3>회원 탈퇴</h3>
+            <p>게시글·댓글을 포함한 모든 활동 기록이 삭제되며 복구할 수 없습니다.</p>
+            <button class="btn btn-danger" id="deleteAccountButton" type="button">영구 탈퇴</button>
+            <p class="status" id="deleteFeedback"></p>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel hidden login-panel" data-section="login">
+        <div class="panel__head">
+          <div>
+            <p class="panel__eyebrow">LOGIN</p>
+            <h2>계정 로그인</h2>
+          </div>
+          <button class="btn btn-outline cognito-login" type="button" id="cognitoButton">Cognito 로그인</button>
+        </div>
+        <form id="loginForm" class="form-grid">
+          <label>
+            아이디
+            <input class="input" type="text" name="username" required autocomplete="username" />
+          </label>
+          <label>
+            비밀번호
+            <input class="input" type="password" name="password" required autocomplete="current-password" />
+          </label>
+          <button class="btn btn-primary" type="submit">로그인</button>
+        </form>
+        <p class="status" id="loginFeedback"></p>
+        <p class="support-links">
+          <button class="btn btn-text" id="loginSupportButton" type="button">아이디/비밀번호 찾기</button>
+        </p>
+      </section>
+
+      <section class="panel hidden signup-panel" data-section="signup">
+        <div class="panel__head">
+          <div>
+            <p class="panel__eyebrow">SIGN UP</p>
+            <h2>회원가입</h2>
+          </div>
+        </div>
+        <form id="signupForm" class="form-grid" enctype="multipart/form-data">
+          <label>
+            사용자 ID
+            <input class="input" type="text" name="username" required />
+          </label>
+          <label>
+            비밀번호
+            <input class="input" type="password" name="password" required autocomplete="new-password" />
+          </label>
+          <label>
+            닉네임
+            <input class="input" type="text" name="nickname" required />
+          </label>
+          <label>
+            이메일
+            <input class="input" type="email" name="email" required autocomplete="email" />
+          </label>
+          <label class="file-input">
+            프로필 이미지 선택
+            <input type="file" name="profilePicture" accept="image/*" />
+          </label>
+          <button class="btn btn-secondary" type="submit">회원가입</button>
+        </form>
+        <p class="status" id="signupFeedback"></p>
+      </section>
+
+      <section class="panel hidden verify-panel" data-section="verify">
+        <div class="panel__head">
+          <div>
+            <p class="panel__eyebrow">EMAIL VERIFY</p>
+            <h2>이메일 인증</h2>
+            <small>가입 직후 받은 확인 코드를 입력하세요.</small>
+          </div>
+        </div>
+        <form id="verifyEmailForm" class="form-grid">
+          <label>
+            사용자 ID
+            <input class="input" type="text" name="username" required />
+          </label>
+          <label>
+            인증 코드
+            <input class="input" type="text" name="code" required maxlength="6" />
+          </label>
+          <div class="verify-actions">
+            <button class="btn btn-primary" type="submit">인증하기</button>
+            <button class="btn btn-text" type="button" id="resendCodeButton">코드 재전송</button>
+          </div>
+        </form>
+        <p class="status" id="verifyFeedback"></p>
+      </section>
+
+      <section class="panel hidden" data-section="auth">
+        <div class="auth-tabs">
+          <button class="auth-tab active" data-auth="find-id">아이디 찾기</button>
+          <button class="auth-tab" data-auth="find-password">비밀번호 재설정</button>
+        </div>
+
+        <div class="auth-panels">
+          <article class="auth-card auth-panel" data-auth-panel="find-id">
+            <div class="panel__head">
+              <div>
+                <p class="panel__eyebrow">FIND USERNAME</p>
+                <h2>아이디 찾기</h2>
+                <small>가입한 이메일을 입력하면 아이디를 알려드립니다.</small>
+              </div>
+            </div>
+            <form id="findIdForm" class="form-grid">
+              <label>
+                이메일
+                <input class="input" type="email" name="email" required />
+              </label>
+              <button class="btn btn-primary" type="submit">아이디 찾기</button>
+            </form>
+            <p class="status" id="findIdFeedback"></p>
+          </article>
+
+          <article class="auth-card auth-panel hidden" data-auth-panel="find-password">
+            <div class="panel__head">
+              <div>
+                <p class="panel__eyebrow">RESET PASSWORD</p>
+                <h2>비밀번호 재설정</h2>
+              </div>
+            </div>
+            <div class="forgot-steps">
+              <form id="requestResetCodeForm" class="form-grid">
+                <label>
+                  아이디
+                  <input class="input" type="text" name="username" required />
+                </label>
+                <label>
+                  이메일
+                  <input class="input" type="email" name="email" required />
+                </label>
+                <button class="btn btn-secondary" type="submit">코드 요청</button>
+              </form>
+              <form id="verifyResetCodeForm" class="form-grid hidden">
+                <label>
+                  인증 코드
+                  <input class="input" type="text" name="code" required />
+                </label>
+                <button class="btn btn-secondary" type="submit">코드 확인</button>
+              </form>
+              <form id="resetPasswordForm" class="form-grid hidden">
+                <label>
+                  새 비밀번호
+                  <input class="input" type="password" name="newPassword" required />
+                </label>
+                <label>
+                  새 비밀번호 확인
+                  <input class="input" type="password" name="confirmPassword" required />
+                </label>
+                <button class="btn btn-primary" type="submit">비밀번호 재설정</button>
+              </form>
+            </div>
+            <p class="status" id="forgotFeedback"></p>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <script src="config.js?v=20251116"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
+    <script>
+      (function () {
+        const version = window.__ASSET_VERSION__ || 'v0';
+        const script = document.createElement('script');
+        script.src = `app.js?v=${version}`;
+        document.body.appendChild(script);
+      })();
+    </script>
+  </body>
+</html>

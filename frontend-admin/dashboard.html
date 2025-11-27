@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>관리자 대시보드</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.1/dist/tailwind.min.css" />
+  <link rel="stylesheet" href="css/admin.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"
+          integrity="sha384-NrKB+u6Ts6AtkIhwPixiKTzgSKNblyhlk0Sohlgar9UHUBzai/sgnNNWWd291xqt"
+          crossorigin="anonymous"></script>
+</head>
+<body>
+  <header class="admin-header">
+    <div>
+      <p class="subtitle">Moderation · AWS · Rekognition</p>
+      <h1>관리자 대시보드</h1>
+    </div>
+    <div class="header-actions">
+      <div class="notification-wrapper">
+        <button id="notificationButton" class="icon-btn" type="button" aria-label="알림">
+          <span class="bell-icon">🔔</span>
+          <span id="notificationCount" class="notif-badge hidden">0</span>
+        </button>
+        <div id="notificationPanel" class="notification-panel hidden">
+          <div class="panel-head">
+            <div>
+              <h3 class="h6 mb-0">실시간 알림</h3>
+              <small class="text-muted">유해 감지 및 신고 상황을 즉시 확인하세요.</small>
+            </div>
+            <button id="markAllNotifications" class="btn btn-outline btn-sm">모두 읽음</button>
+          </div>
+          <ul id="notificationList" class="notification-list"></ul>
+          <p id="notificationEmpty" class="text-muted text-center hidden">표시할 알림이 없습니다.</p>
+        </div>
+      </div>
+      <button id="profileButton" class="profile-chip" type="button">
+        <span class="profile-avatar" id="profileAvatar">A</span>
+        <span class="profile-name" id="profileName">관리자</span>
+      </button>
+      <button id="logoutButton" class="btn btn-outline">로그아웃</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="nav-panel">
+      <button class="nav-btn active" data-section-target="stats">대시보드</button>
+      <button class="nav-btn" data-section-target="moderation">모더레이션</button>
+      <button class="nav-btn" data-section-target="posts">게시글</button>
+      <button class="nav-btn" data-section-target="reports">신고</button>
+      <button class="nav-btn" data-section-target="notices">공지</button>
+      <button class="nav-btn" data-section-target="users">사용자</button>
+      <button class="nav-btn" data-section-target="monitoring">모니터링</button>
+    </aside>
+
+    <main class="content-grid">
+      <section class="card span-2" data-section="stats">
+        <h2>시스템 현황</h2>
+        <p class="text-muted mb-3">주요 지표를 한눈에 볼 수 있도록 영역을 나눴습니다.</p>
+
+        <div class="section-block">
+          <h3 class="h6 text-uppercase text-muted mb-1">요약 지표</h3>
+          <div id="statCards" class="stat-grid"></div>
+        </div>
+
+        <div class="chart-grid">
+          <div class="chart-card">
+            <div class="section-head">
+              <div>
+                <h3 class="h6 mb-0">일별 가입자 수</h3>
+                <small class="text-muted">최근 7일 추이</small>
+              </div>
+            </div>
+            <canvas id="signupChart" height="140"></canvas>
+          </div>
+
+          <div class="chart-card">
+            <div class="section-head">
+              <div>
+                <h3 class="h6 mb-0">카테고리 비율</h3>
+                <small class="text-muted">게시글 분포</small>
+              </div>
+            </div>
+            <canvas id="categoryChart" height="140"></canvas>
+          </div>
+
+          <div class="chart-card">
+            <div class="section-head">
+              <div>
+                <h3 class="h6 mb-0">유해 감지</h3>
+                <small class="text-muted">Rekognition 요약</small>
+              </div>
+            </div>
+            <canvas id="harmfulChart" height="140"></canvas>
+          </div>
+
+          <div class="chart-card">
+            <div class="section-head">
+              <div>
+                <h3 class="h6 mb-0">시스템 메트릭</h3>
+                <small class="text-muted">CPU/메모리</small>
+              </div>
+            </div>
+            <canvas id="systemChart" height="140"></canvas>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-head">
+            <div>
+              <h3 class="h6 mb-0">모니터링 요약</h3>
+              <small class="text-muted">Prometheus 지표 요약</small>
+            </div>
+            <button id="refreshMonitoring" class="btn btn-outline btn-sm">새로고침</button>
+          </div>
+          <div id="monitoringCards" class="stat-grid monitoring-grid"></div>
+          <p id="monitoringMessage" class="status" hidden></p>
+        </div>
+
+        <div class="section-block">
+          <div class="section-head">
+            <div>
+              <h3 class="h6 mb-0">S3 파일 목록</h3>
+              <small class="text-muted">Rekognition 조회를 위해 항목을 선택하세요.</small>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Key</th>
+                  <th>Size</th>
+                  <th>업로드</th>
+                  <th>분석</th>
+                </tr>
+              </thead>
+              <tbody id="s3TableBody">
+                <tr><td colspan="4" class="text-center text-muted py-3">S3 객체를 불러오는 중입니다.</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="rekognition-panel">
+            <p id="rekognitionPlaceholder" class="status">파일을 선택하면 결과가 표시됩니다.</p>
+            <ul id="rekognitionResults"></ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="card hidden" data-section="moderation">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2 class="mb-0">모더레이션 큐</h2>
+          <button id="refreshReview" class="btn btn-outline btn-sm">새로고침</button>
+        </div>
+        <div class="moderation-toolbar">
+          <div class="moderation-search-group">
+            <select id="moderationSearchField" class="input moderation-select">
+              <option value="all">전체</option>
+              <option value="id">ID</option>
+              <option value="detection">감지 타입</option>
+              <option value="author">작성자</option>
+              <option value="menu">메뉴</option>
+            </select>
+            <input id="moderationSearch" class="input moderation-search" type="search" placeholder="검색어를 입력하세요" />
+          </div>
+          <small class="text-muted">행을 클릭하면 상세 페이지로 이동합니다.</small>
+        </div>
+        <div id="reviewList" class="table-responsive"></div>
+      </section>
+
+      <section class="card hidden" data-section="posts">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2 class="mb-0">게시글</h2>
+          <div class="moderation-search-group">
+            <select id="postSearchField" class="input moderation-select">
+              <option value="all">전체</option>
+              <option value="id">ID</option>
+              <option value="title">제목</option>
+              <option value="author">작성자</option>
+              <option value="menu">메뉴</option>
+              <option value="status">상태</option>
+            </select>
+            <input id="postSearch" class="input moderation-search" type="search" placeholder="검색어를 입력하세요" />
+          </div>
+        </div>
+        <div id="postTable" class="table-responsive"></div>
+      </section>
+
+      <section class="card hidden" data-section="notices">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2 class="mb-0">공지 관리</h2>
+          <div class="moderation-search-group">
+            <select id="noticeSearchField" class="input moderation-select">
+              <option value="all">전체</option>
+              <option value="title">제목</option>
+              <option value="content">내용</option>
+              <option value="pinned">고정 여부</option>
+            </select>
+            <input id="noticeSearch" class="input moderation-search" type="search" placeholder="공지 검색" />
+            <button id="createNotice" class="btn btn-primary btn-sm">공지 등록</button>
+          </div>
+        </div>
+        <div id="noticeList" class="table-responsive"></div>
+      </section>
+
+      <section class="card hidden" data-section="users">
+        <h2>사용자 관리</h2>
+        <div id="userTable" class="table-responsive"></div>
+      </section>
+
+      <section class="card hidden" data-section="reports">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <h2 class="mb-0">신고 목록</h2>
+            <small class="text-muted">사용자가 접수한 신고를 한눈에 확인하세요.</small>
+          </div>
+          <div class="moderation-search-group">
+            <select id="reportSearchField" class="input moderation-select">
+              <option value="all">전체</option>
+              <option value="id">ID</option>
+              <option value="type">유형</option>
+              <option value="status">상태</option>
+              <option value="menu">메뉴</option>
+              <option value="author">작성자</option>
+              <option value="reporter">신고자</option>
+              <option value="reason">사유</option>
+            </select>
+            <input id="reportSearch" class="input moderation-search" type="search" placeholder="검색어를 입력하세요" />
+          </div>
+        </div>
+        <div id="reportTable" class="table-responsive"></div>
+      </section>
+
+      <section class="card hidden" data-section="monitoring">
+        <div class="section-head">
+          <div>
+            <h2 class="mb-0">Grafana 대시보드</h2>
+            <small class="text-muted">실시간 시스템 모니터링</small>
+          </div>
+        </div>
+        <div class="ratio monitoring-ratio">
+          <iframe id="grafanaFrame" title="Grafana Dashboard"></iframe>
+        </div>
+        <p id="grafanaFallback" class="text-muted mt-2" hidden>
+          Grafana 경로나 HTTPS 설정을 확인할 수 없습니다. config.js 또는 API 구성을 점검하세요.
+        </p>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal hidden" id="profileModal">
+    <div class="modal-content">
+      <h3>관리자 프로필</h3>
+      <form id="profileForm" class="form-grid">
+        <label>
+          사용자 ID
+          <input class="input" id="profileUsername" type="text" disabled />
+        </label>
+        <label>
+          이메일
+          <input class="input" id="profileEmail" type="email" disabled />
+        </label>
+        <label>
+          표시 이름
+          <input class="input" id="profileNickname" type="text" placeholder="닉네임" required />
+        </label>
+        <p id="profileFeedback" class="status" data-status=""></p>
+        <div class="d-flex gap-3">
+          <button class="btn btn-primary" type="submit">저장</button>
+          <button class="btn btn-outline" type="button" id="closeProfileModal">취소</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>갤러리 - CMS Community</title>
+    <script src="static.config.js"></script>
+    <link rel="stylesheet" data-versioned="styles" href="styles.css" />
+    <script>
+      (function () {
+        const version = window.__ASSET_VERSION__ || 'v0';
+        const el = document.querySelector('link[data-versioned="styles"]');
+        if (el) {
+          el.href = `styles.css?v=${version}`;
+        }
+      })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700&display=swap" rel="stylesheet" />
+  </head>
+  <body class="gallery-page">
+    <header class="site-header">
+      <div class="site-header__brand">
+        <a class="site-brand__link" href="index.html">
+          <span class="site-header__logo">CMS</span>
+          <strong>community</strong>
+        </a>
+      </div>
+      <nav class="site-header__menu">
+        <button class="site-nav__link" type="button" data-target="home">홈</button>
+        <a class="site-nav__link active" href="gallery.html">갤러리</a>
+        <button class="site-nav__link" type="button" data-target="board">자유게시판</button>
+        <button class="site-nav__link" type="button" data-target="notice">공지사항</button>
+      </nav>
+      <div class="site-header__actions">
+        <div class="user-badge hidden" id="userBadge" role="button" tabindex="0">
+          <div class="user-avatar" id="userAvatar">U</div>
+          <div class="user-meta">
+            <strong id="userName"></strong>
+            <small id="userRole"></small>
+          </div>
+          <button class="btn btn-text" id="headerLogoutButton" type="button">로그아웃</button>
+        </div>
+        <div class="auth-buttons" id="headerAuthButtons">
+          <button class="btn btn-outline" id="headerLoginButton" type="button">로그인</button>
+          <button class="btn btn-ghost" id="headerSignupButton" type="button">회원가입</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="gallery-main">
+      <section class="panel">
+        <div class="panel__head">
+          <div>
+            <h2 id="categoryHeading">카테고리</h2>
+            <p class="panel__description" id="categoryDescription">대메뉴를 선택해 작품을 탐색하세요.</p>
+          </div>
+        </div>
+        <div class="gallery-category-grid" id="mainCategoryGrid"></div>
+      </section>
+
+    </main>
+
+    <script src="config.js?v=20251118a"></script>
+    <script src="gallery-config.js"></script>
+    <script>
+      (function () {
+        const version = window.__ASSET_VERSION__ || 'v0';
+        const script = document.createElement('script');
+        script.src = `gallery.js?v=${version}`;
+        document.body.appendChild(script);
+      })();
+    </script>
+  </body>
+</html>

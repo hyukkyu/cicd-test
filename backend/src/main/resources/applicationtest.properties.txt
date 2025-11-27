@@ -1,0 +1,29 @@
+# Import Secrets Manager (JSON key 기준)
+spring.config.import =  optional:aws-secretsmanager:cms-s3-password,
+                        optional:arn:aws:secretsmanager:ap-southeast-2:897722691159:secret:rds-db-password-yZ2wgp:password::
+
+# AWS Region
+spring.cloud.aws.region.static=ap-southeast-2
+
+# RDS via SSH tunnel
+spring.datasource.url=jdbc:mysql://localhost:3307/${arn:aws:secretsmanager:ap-southeast-2:897722691159:secret:rds-db-password-yZ2wgp:dbname::}
+spring.datasource.username=${arn:aws:secretsmanager:ap-southeast-2:897722691159:secret:rds-db-password-yZ2wgp:username::}
+spring.datasource.password=${arn:aws:secretsmanager:ap-southeast-2:897722691159:secret:rds-db-password-yZ2wgp:password::} # Secrets Manager JSON key에 맞게 수정
+
+# S3 Credentials
+aws.s3.access-key=${arn:aws:secretsmanager:ap-southeast-2:897722691159:secret:cms-s3-password-7sl2Rn:cloud.aws.credentials.accessKey::}  # Secret JSON key 기준
+aws.s3.secret-key=${arn:aws:secretsmanager:ap-southeast-2:897722691159:secret:cms-s3-password-7sl2Rn:cloud.aws.credentials.secretKey::}
+
+# S3 Bucket
+cloud.aws.s3.bucket=2025-cms-s3-bucket
+
+# Multipart Upload
+spring.servlet.multipart.max-file-size=100MB
+spring.servlet.multipart.max-request-size=100MB
+
+# Cognito
+com.example.authapp.cognito.userPoolId=ap-southeast-2_HO9yjI4cp
+com.example.authapp.cognito.clientId=288rgkald3viddl15igdcr87v2
+
+# JPA
+spring.jpa.database-platform=org.hibernate.dialect.MySQL8Dialect

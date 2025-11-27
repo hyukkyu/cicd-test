@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="footer" class="board-footer d-flex align-items-center justify-content-between">
+    <style>
+        .search-container {
+            display: flex;
+            border: 2px solid #007bff;
+            border-radius: 5px;
+            overflow: hidden;
+            align-items: center;
+        }
+        .search-container select,
+        .search-container input {
+            border: none;
+            outline: none;
+            padding: 10px;
+            font-size: 14px;
+        }
+        .search-container select {
+            background-color: #f8f9fa;
+            border-right: 1px solid #ddd;
+        }
+        .search-container input[type="text"] {
+            flex-grow: 1;
+            min-width: 200px;
+        }
+        .search-container button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            padding: 10px 15px;
+            font-size: 16px;
+        }
+        .search-container button:hover {
+            background-color: #0056b3;
+        }
+        .search-container button i {
+            font-size: 16px;
+        }
+    </style>
+    <!-- Left side: Search Controls -->
+    <div class="d-flex align-items-center gap-2">
+        <form method="get" id="searchForm" class="d-flex">
+            <div class="search-container">
+                <select name="searchType" id="searchType">
+                    <option value="all" th:selected="${searchType == 'all'}">전체</option>
+                    <option value="title" th:selected="${searchType == 'title'}">제목</option>
+                    <option value="content" th:selected="${searchType == 'content'}">내용</option>
+                    <option value="user" th:selected="${searchType == 'user'}">글쓴이</option>
+                </select>
+                <input type="text" name="kw" id="kw" placeholder="검색어를 입력하세요" th:value="${kw}">
+                <button type="button" id="btn_search"><i class="fa fa-search"></i></button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Right side: Write Button -->
+    <a th:href="@{|/post/create?mainBoardName=${mainBoardName}&subBoardName=${subBoardName}|}" class="write-btn btn btn-dark flex-shrink-0">
+        <i class="fa-solid fa-pencil"></i> 글쓰기
+    </a>
+</div>
+
+<!-- Pagination -->
+<div th:fragment="pagination" class="pagination" th:if="${!paging.isEmpty()}">
+    <a th:href="@{|${baseUrl}?page=${paging.number-1}&kw=${kw}&tab=${activeTab}&searchType=${searchType}&postType=${postType}|}" class="page-link" th:classappend="${!paging.hasPrevious} ? 'disabled'">이전</a>
+    <th:block th:each="page: ${#numbers.sequence(0, paging.totalPages-1)}">
+        <a th:if="${page >= paging.number-5 and page <= paging.number+5}"
+           th:text="${page + 1}" class="page-link" th:href="@{|${baseUrl}?page=${page}&kw=${kw}&tab=${activeTab}&searchType=${searchType}&postType=${postType}|}"
+           th:classappend="${page == paging.number} ? 'active'"></a>
+    </th:block>
+    <a th:href="@{|${baseUrl}?page=${paging.number+1}&kw=${kw}&tab=${activeTab}&searchType=${searchType}&postType=${postType}|}" class="page-link" th:classappend="${!paging.hasNext} ? 'disabled'">다음</a>
+</div>
+
+<script th:fragment="search-script" th:inline="javascript">
+/*<![CDATA[*/
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchBtn = document.getElementById('btn_search');
+        if(searchBtn) {
+            searchBtn.addEventListener('click', function() {
+                document.getElementById('loading-overlay').style.display = 'flex'; // Show loading overlay
+
+                const searchType = document.getElementById('searchType').value;
+                const kw = document.getElementById('kw').value;
+                const currentUrl = /*[[@{${#httpServletRequest.requestURI}}]]*/ '';
+                const tab = /*[[${activeTab}]]*/ null;
+                
+                let url = new URL(window.location.origin + currentUrl);
+                url.searchParams.set("searchType", searchType);
+                url.searchParams.set("kw", kw);
+                if (tab) {
+                    url.searchParams.set("tab", tab);
+                }
+                url.searchParams.set("page", "0"); // Always go to the first page on a new search
+
+                // A small delay to ensure the overlay is rendered before navigation starts
+                setTimeout(() => { 
+                    window.location.href = url.toString();
+                }, 50);
+            });
+        }
+
+        // Add loading overlay to pagination links
+        const pageLinks = document.querySelectorAll('.page-link');
+        pageLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                // Only show overlay if the link is not disabled
+                if (!this.classList.contains('disabled')) {
+                    document.getElementById('loading-overlay').style.display = 'flex';
+                }
+            });
+        });
+    });
+/*]]>*/
+</script>
+
+</html>

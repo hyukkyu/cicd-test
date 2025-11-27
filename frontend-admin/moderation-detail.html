@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>모더레이션 상세</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.1/dist/tailwind.min.css" />
+  <link rel="stylesheet" href="css/admin.css" />
+</head>
+<body>
+  <header class="admin-header">
+    <div>
+      <p class="subtitle">모더레이션 상세</p>
+      <h1>검토 항목 #<span id="detailId">-</span></h1>
+    </div>
+    <div class="header-actions">
+      <div class="notification-wrapper">
+        <button id="notificationButton" class="icon-btn" type="button" aria-label="알림">
+          <span class="bell-icon">🔔</span>
+          <span id="notificationCount" class="notif-badge hidden">0</span>
+        </button>
+        <div id="notificationPanel" class="notification-panel hidden">
+          <div class="panel-head">
+            <div>
+              <h3 class="h6 mb-0">실시간 알림</h3>
+              <small class="text-muted">유해 감지 및 신고 상황을 즉시 확인하세요.</small>
+            </div>
+            <button id="markAllNotifications" class="btn btn-outline btn-sm">모두 읽음</button>
+          </div>
+          <ul id="notificationList" class="notification-list"></ul>
+          <p id="notificationEmpty" class="text-muted text-center hidden">표시할 알림이 없습니다.</p>
+        </div>
+      </div>
+      <button id="profileButton" class="profile-chip" type="button">
+        <span class="profile-avatar" id="profileAvatar">A</span>
+        <span class="profile-name" id="profileName">관리자</span>
+      </button>
+      <button id="logoutButton" class="btn btn-outline">로그아웃</button>
+    </div>
+  </header>
+
+  <main class="detail-layout single">
+    <section class="detail-card">
+      <div class="section-head mb-3">
+        <div>
+          <h2 class="h5 mb-1">감지 정보</h2>
+          <small class="text-muted">AI가 감지한 유형, 라벨, 감지 텍스트를 확인하세요.</small>
+        </div>
+        <div class="detail-actions">
+          <button id="approveBtn" class="btn btn-primary">승인</button>
+          <button id="rejectBtn" class="btn btn-outline">차단</button>
+        </div>
+      </div>
+
+      <div class="detail-grid">
+        <div><span>감지 타입</span><p id="detailDetection">-</p></div>
+        <div><span>상태</span><p id="detailStatus">-</p></div>
+        <div><span>감지 시각</span><p id="detailCreated">-</p></div>
+        <div><span>메뉴</span><p id="detailMainBoard">-</p></div>
+        <div class="span-2"><span>감지 텍스트</span><p id="detectionText" class="detected-text">-</p></div>
+      </div>
+
+      <div class="detail-group mt-3 hidden" id="flaggedMediaGroup">
+        <h3 class="h6 mb-2">감지된 첨부파일</h3>
+        <div id="flaggedMediaList" class="file-list"></div>
+      </div>
+
+      <div class="detail-group mt-3">
+        <h3 class="h6 mb-2">미디어 미리보기</h3>
+        <div id="contentPreview" class="content-preview">미디어가 없습니다.</div>
+      </div>
+
+      <div class="detail-group mt-3">
+        <h3 class="h6 mb-2">게시글 정보</h3>
+        <div id="postInfo" class="detail-grid text-muted">관련 게시글이 없습니다.</div>
+      </div>
+
+      <div class="detail-group mt-3">
+        <h3 class="h6 mb-2">댓글 정보</h3>
+        <div id="commentInfo" class="detail-grid text-muted">관련 댓글이 없습니다.</div>
+      </div>
+
+      <div class="detail-group mt-4">
+        <h3 class="h6 mb-2" id="jsonHeaderLabel">AI 검출 결과 (JSON)</h3>
+        <pre id="moderationJson" class="content-preview">-</pre>
+      </div>
+    </section>
+  </main>
+
+  <script src="config.js"></script>
+  <script src="js/header.js"></script>
+  <script src="js/moderation-detail.js"></script>
+</body>
+</html>

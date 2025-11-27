@@ -1,0 +1,61 @@
+region: ap-northeast-1
+metrics:
+  - aws_namespace: AWS/ApplicationELB
+    aws_metric_name: RequestCount
+    aws_dimensions: [LoadBalancer]
+    aws_dimension_select:
+      LoadBalancer:
+        - app/cms-community-alb/001efe9617020d30
+    aws_statistics: [Sum]
+    period_seconds: 60
+    range_seconds: 300
+
+  - aws_namespace: AWS/ApplicationELB
+    aws_metric_name: HTTPCode_Target_4XX_Count
+    aws_dimensions: [LoadBalancer]
+    aws_dimension_select:
+      LoadBalancer:
+        - app/cms-community-alb/001efe9617020d30
+    aws_statistics: [Sum]
+    period_seconds: 60
+    range_seconds: 300
+
+  - aws_namespace: AWS/ApplicationELB
+    aws_metric_name: HTTPCode_Target_5XX_Count
+    aws_dimensions: [LoadBalancer]
+    aws_dimension_select:
+      LoadBalancer:
+        - app/cms-community-alb/001efe9617020d30
+    aws_statistics: [Sum]
+    period_seconds: 60
+    range_seconds: 300
+
+  - aws_namespace: AWS/ApplicationELB
+    aws_metric_name: TargetResponseTime
+    aws_dimensions: [LoadBalancer]
+    aws_dimension_select:
+      LoadBalancer:
+        - app/cms-community-alb/001efe9617020d30
+    aws_statistics: [Average, p90, p99]
+    period_seconds: 60
+    range_seconds: 300
+
+  - aws_namespace: AWS/ApplicationELB
+    aws_metric_name: ActiveConnectionCount
+    aws_dimensions: [LoadBalancer]
+    aws_dimension_select:
+      LoadBalancer:
+        - app/cms-community-alb/001efe9617020d30
+    aws_statistics: [Average]
+    period_seconds: 60
+    range_seconds: 300
+
+  - aws_namespace: AWS/ApplicationELB
+    aws_metric_name: UnHealthyHostCount
+    aws_dimensions: [TargetGroup]
+    aws_dimension_select_regex:
+      TargetGroup:
+        - targetgroup/cms-community-tg/.*
+    aws_statistics: [Average]
+    period_seconds: 60
+    range_seconds: 300

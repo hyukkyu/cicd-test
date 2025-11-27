@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>공지 상세 - CMS Community</title>
+    <script src="static.config.js"></script>
+    <link rel="stylesheet" data-versioned="styles" href="styles.css" />
+    <script>
+      (function () {
+        const version = window.__ASSET_VERSION__ || 'v0';
+        const el = document.querySelector('link[data-versioned="styles"]');
+        if (el) {
+          el.href = `styles.css?v=${version}`;
+        }
+      })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700&display=swap" rel="stylesheet" />
+  </head>
+  <body class="gallery-detail-page">
+    <header class="site-header">
+      <div class="site-header__brand">
+        <a class="site-brand__link" href="index.html">
+          <span class="site-header__logo">CMS</span>
+          <strong>community</strong>
+        </a>
+      </div>
+      <nav class="site-header__menu">
+        <a class="site-nav__link" href="index.html">홈</a>
+        <a class="site-nav__link" href="gallery.html">갤러리</a>
+        <a class="site-nav__link" href="board-list.html">자유게시판</a>
+        <a class="site-nav__link active" href="notice-detail.html">공지사항</a>
+      </nav>
+      <div class="site-header__actions">
+        <a class="btn btn-outline" href="index.html#notice">공지 목록으로</a>
+      </div>
+    </header>
+
+    <main class="notice-detail page-padding">
+      <section class="panel">
+        <div class="notice-detail__header">
+          <p class="panel__eyebrow">NOTICE</p>
+          <h1 class="notice-detail__title" id="noticeDetailTitle">공지 제목</h1>
+          <div class="notice-detail__meta" id="noticeDetailMeta"></div>
+        </div>
+        <article class="notice-detail__body" id="noticeDetailBody">내용을 불러오는 중입니다...</article>
+        <div class="notice-detail__attachments hidden" id="noticeDetailAttachments">
+          <strong>첨부파일</strong>
+          <div id="noticeAttachmentList" class="notice-detail__attachment-grid"></div>
+        </div>
+        <p class="status" id="noticeDetailStatus"></p>
+      </section>
+    </main>
+
+    <script src="config.js?v=20251118a"></script>
+    <script>
+      (function () {
+        const version = window.__ASSET_VERSION__ || 'v0';
+        const script = document.createElement('script');
+        script.src = `notice-detail.js?v=${version}`;
+        document.body.appendChild(script);
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>갤러리 상세 - CMS Community</title>
+    <script src="static.config.js"></script>
+    <link rel="stylesheet" data-versioned="styles" href="styles.css" />
+    <script>
+      (function () {
+        const version = window.__ASSET_VERSION__ || 'v0';
+        const el = document.querySelector('link[data-versioned="styles"]');
+        if (el) {
+          el.href = `styles.css?v=${version}`;
+        }
+      })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700&display=swap" rel="stylesheet" />
+  </head>
+  <body class="gallery-detail-page">
+    <header class="site-header">
+      <div class="site-header__brand">
+        <a class="site-brand__link" href="index.html">
+          <span class="site-header__logo">CMS</span>
+          <strong>community</strong>
+        </a>
+      </div>
+      <nav class="site-header__menu">
+        <button class="site-nav__link" type="button" data-target="home">홈</button>
+        <a class="site-nav__link active" href="gallery.html">갤러리</a>
+        <button class="site-nav__link" type="button" data-target="board">자유게시판</button>
+        <button class="site-nav__link" type="button" data-target="notice">공지사항</button>
+      </nav>
+      <div class="site-header__actions">
+        <div class="user-badge hidden" id="userBadge" role="button" tabindex="0">
+          <div class="user-avatar" id="userAvatar">U</div>
+          <div class="user-meta">
+            <strong id="userName"></strong>
+            <small id="userRole"></small>
+          </div>
+          <button class="btn btn-text" id="headerLogoutButton" type="button">로그아웃</button>
+        </div>
+        <div class="auth-buttons" id="headerAuthButtons">
+          <button class="btn btn-outline" id="headerLoginButton" type="button">로그인</button>
+          <button class="btn btn-ghost" id="headerSignupButton" type="button">회원가입</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="gallery-detail">
+      <section class="panel" id="detailPanel">
+        <div class="detail-hero">
+          <div class="detail-info">
+            <p class="panel__eyebrow detail-category" id="detailCategory"></p>
+            <div class="detail-title-stats">
+              <span class="detail-title-stat detail-title-stat--author" id="detailMeta"></span>
+              <span class="detail-title-separator" aria-hidden="true"></span>
+              <span class="detail-title-stat" id="detailLikeCount">추천 0</span>
+              <span class="detail-title-stat" id="detailViewCount">조회 0</span>
+              <span class="detail-title-separator" aria-hidden="true"></span>
+              <span class="detail-meta__time detail-title-date" id="detailCreatedAt">방금 전</span>
+            </div>
+            <h1 id="detailTitle">작품 제목</h1>
+            <p class="detail-description" id="detailDescription"></p>
+            <div class="detail-inline-media hidden" id="detailInlineMedia"></div>
+            <div class="detail-actions">
+              <button class="btn btn-secondary" type="button" id="detailVoteButton">추천</button>
+              <button class="btn btn-text" type="button" id="detailReportButton">신고</button>
+              <div class="detail-actions__spacer" aria-hidden="true"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-subhead">
+          <h3>댓글</h3>
+          <small id="detailCommentCount"></small>
+          <button id="detailLoadMoreComments" class="btn btn-text" type="button">더 보기</button>
+        </div>
+        <ul id="detailCommentList" class="comment-list"></ul>
+        <form id="detailCommentForm" class="form-grid">
+          <input type="hidden" name="parentId" id="detailCommentParentId" />
+          <div class="comment-reply-target hidden" id="detailReplyTarget">
+            <span id="detailReplyLabel"></span>
+            <button class="btn btn-text" type="button" id="detailCancelReplyButton">취소</button>
+          </div>
+          <textarea name="content" rows="3" class="input" placeholder="댓글을 입력하세요" required></textarea>
+          <button class="btn btn-primary" type="submit">댓글 등록</button>
+        </form>
+        <p class="status" id="detailStatus"></p>
+      </section>
+    </main>
+
+    <div class="modal hidden" id="reportModal">
+      <div class="modal__dialog">
+        <button class="modal__close" type="button" id="closeReportModal" aria-label="신고 닫기">&times;</button>
+        <div class="modal__body">
+          <div class="modal__header">
+            <h3>신고하기</h3>
+            <p class="modal__meta" id="reportTargetLabel"></p>
+          </div>
+          <form id="reportForm" class="form-grid">
+            <textarea name="reason" rows="4" class="input" placeholder="신고 사유를 입력하세요" required></textarea>
+            <div class="form-actions">
+              <button class="btn btn-primary" type="submit">신고 접수</button>
+              <button class="btn btn-text" type="button" id="cancelReportButton">닫기</button>
+            </div>
+          </form>
+          <p class="status" id="reportStatus"></p>
+        </div>
+      </div>
+    </div>
+
+    <script src="config.js?v=20251118a"></script>
+    <script src="gallery-config.js"></script>
+    <script>
+      (function () {
+        const version = window.__ASSET_VERSION__ || 'v0';
+        const script = document.createElement('script');
+        script.src = `gallery-detail.js?v=${version}`;
+        document.body.appendChild(script);
+      })();
+    </script>
+  </body>
+</html>

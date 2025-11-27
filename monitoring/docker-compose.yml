@@ -1,0 +1,41 @@
+version: "3.9"
+services:
+  prometheus:
+    image: prom/prometheus:v2.51.2
+    container_name: cms-community-prometheus
+    restart: unless-stopped
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+  cloudwatch-exporter:
+    image: quay.io/prometheus/cloudwatch-exporter:v0.15.3
+    container_name: cms-community-cloudwatch-exporter
+    restart: unless-stopped
+    environment:
+      - AWS_REGION=ap-northeast-1
+    command:
+      - "/config/config.yml"
+    volumes:
+      - ./cloudwatch/config.yml:/config/config.yml:ro
+    ports:
+      - "9106:9106"
+  grafana:
+    image: grafana/grafana:10.4.2
+    container_name: cms-community-grafana
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_SECURITY_ALLOW_EMBEDDING=true
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
+      # Serve under the backend proxy path so Grafana asset URLs stay under /api/admin/monitoring/grafana/proxy
+      - GF_SERVER_SERVE_FROM_SUB_PATH=true
+      - GF_SERVER_ROOT_URL=https://api.cms-community.com/api/admin/monitoring/grafana/proxy
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - grafana-data:/var/lib/grafana
+    ports:
+      - "3000:3000"
+volumes:
+  grafana-data:
