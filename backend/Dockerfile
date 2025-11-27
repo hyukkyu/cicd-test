@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17-jre-alpine as runtime
+FROM eclipse-temurin:17-jre-alpine as runtime ##
 WORKDIR /app
 COPY target/backend-0.0.1-SNAPSHOT.jar app.jar
 EXPOSE 8080
