@@ -136,7 +136,6 @@ public class AdminService {
         } catch (Exception e) {
             log.warn("Failed to disable Cognito user {} while blocking locally: {}", user.getUsername(), e.getMessage());
         }
-        String a = "asdfsdf";
         String message = (reason != null && !reason.isBlank())
                 ? reason
                 : "관리자가 커뮤니티 이용 수칙 위반으로 계정을 정지했습니다.";
