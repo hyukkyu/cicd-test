@@ -4,7 +4,6 @@ public record AdminDashboardStatsDto(
         long activeUsers,
         long blockedUsers,
         long publishedPosts,
-        long harmfulPosts,
-        long har2222
+        long harmfulPosts
 ) {
 }
