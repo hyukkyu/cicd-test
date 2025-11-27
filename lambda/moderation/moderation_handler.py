@@ -11,7 +11,7 @@ sns = boto3.client('sns')
 
 MEDIA_CONFIDENCE = float(os.getenv('MEDIA_CONFIDENCE', '0.7')) * 100
 ADMIN_ALERT_TOPIC = os.getenv('ADMIN_ALERT_TOPIC')
-VIDEO_EXTENSIONS = ('.mp4', '.mov', '.avi', '.mkv') #ㅁㄴㅇㄹ
+VIDEO_EXTENSIONS = ('.mp4', '.mov', '.avi', '.mkv')
 
 DB_HOST = os.environ['DB_HOST']
 DB_NAME = os.environ['DB_NAME']

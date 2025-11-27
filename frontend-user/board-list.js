@@ -20,7 +20,6 @@ const boardState = {
   size: 12,
   hasNext: true,
   items: []
-  // asdf
 };
 
 runWhenReady(initBoardListPage);

@@ -11,7 +11,7 @@ SCALE_DOWN_DESIRED="${SCALE_DOWN_DESIRED:-0}"
 SCALE_UP_DESIRED="${SCALE_UP_DESIRED:-2}"
 SKIP_ECS_SCALING="${SKIP_ECS_SCALING:-false}"
 ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-ECR_URL="$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$REPO_NAME" #안녕
+ECR_URL="$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$REPO_NAME"
 
 scaled_down=false
 scaled_up=false
