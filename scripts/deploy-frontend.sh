@@ -12,6 +12,7 @@ if [[ $# -lt 1 ]]; then
   usage
 fi
 
+ROOT_DIR=${ROOT_DIR:-$(cd "$(dirname "$0")/.." && pwd)}
 TARGET=$1
 BUCKET_ARG=${2:-}
 REGION=${REGION:-ap-northeast-1}
@@ -25,12 +26,13 @@ deploy() {
   local folder=$1
   local bucket=$2
   local distribution_id=$3
-  if [[ ! -d "/home/ubuntu/$folder" ]]; then
-    echo "Folder /home/ubuntu/$folder not found"
+  local source_dir="$ROOT_DIR/$folder"
+  if [[ ! -d "$source_dir" ]]; then
+    echo "Folder $source_dir not found"
     exit 1
   fi
   echo "Syncing $folder to s3://$bucket"
-  aws s3 sync "/home/ubuntu/$folder" "s3://$bucket" --delete --region "$REGION" --cache-control "max-age=60" --acl private
+  aws s3 sync "$source_dir" "s3://$bucket" --delete --region "$REGION" --cache-control "max-age=60" --acl private
   if [[ -n "$distribution_id" ]]; then
     echo "Invalidating CloudFront distribution $distribution_id with paths: $INVALIDATE_PATHS"
     aws cloudfront create-invalidation --distribution-id "$distribution_id" --paths "$INVALIDATE_PATHS" >/dev/null

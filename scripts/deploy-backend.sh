@@ -2,6 +2,7 @@
 set -euo pipefail
 
 REGION="${REGION:-ap-northeast-1}"
+ROOT_DIR=${ROOT_DIR:-$(cd "$(dirname "$0")/.." && pwd)}
 REPO_NAME="cms-community-backend"
 IMAGE_TAG=${1:-latest}
 CLUSTER="${CLUSTER:-cms-community-cluster}"
@@ -42,11 +43,11 @@ fi
 aws ecr describe-repositories --repository-names "$REPO_NAME" >/dev/null 2>&1 || \
   aws ecr create-repository --repository-name "$REPO_NAME" --region "$REGION"
 
-pushd /home/ubuntu/backend >/dev/null
+pushd "$ROOT_DIR/backend" >/dev/null
 mvn -q -DskipTests package
 popd >/dev/null
 
-sudo docker build -t "$ECR_URL:$IMAGE_TAG" /home/ubuntu/backend
+sudo docker build -t "$ECR_URL:$IMAGE_TAG" "$ROOT_DIR/backend"
 aws ecr get-login-password --region "$REGION" | sudo docker login --username AWS --password-stdin "$ECR_URL"
 sudo docker push "$ECR_URL:$IMAGE_TAG"
 
